@@ -24,7 +24,7 @@ func (fi *dirMinIOFileInfo) Size() int64 {
 }
 
 func (fi *dirMinIOFileInfo) Mode() fs.FileMode {
-	return 0755
+	return 0o755
 }
 
 func (fi *dirMinIOFileInfo) ModTime() time.Time {

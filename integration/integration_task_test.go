@@ -16,7 +16,8 @@ func TestIntegration_Task(t *testing.T) {
 		{"gofs remote disk", "run-gofs-remote-disk-server.yaml", "test-gofs-remote-disk.yaml"},
 		{"gofs remote disk with HTTP3", "run-gofs-remote-disk-server-with-http3.yaml", "test-gofs-remote-disk.yaml"},
 		{"gofs remote push", "run-gofs-remote-push-server.yaml", "test-gofs-remote-push.yaml"},
-		{"gofs remote push with HTTP3", "run-gofs-remote-push-server-with-http3.yaml", "test-gofs-remote-push.yaml"}}
+		{"gofs remote push with HTTP3", "run-gofs-remote-push-server-with-http3.yaml", "test-gofs-remote-push.yaml"},
+	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {

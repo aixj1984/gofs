@@ -7,9 +7,7 @@ import (
 	"time"
 )
 
-var (
-	errWaitDone = errors.New("wait done error")
-)
+var errWaitDone = errors.New("wait done error")
 
 func TestWaitDone(t *testing.T) {
 	wd := NewWaitDone()
@@ -24,7 +22,6 @@ func TestWaitDone(t *testing.T) {
 }
 
 func TestWaitDone_ReturnError(t *testing.T) {
-
 	wd := NewWaitDone()
 	go func() {
 		time.After(time.Millisecond)

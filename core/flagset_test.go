@@ -5,6 +5,4 @@ import (
 	"os"
 )
 
-var (
-	testCommandLine = NewFlagSet(os.Args[0], flag.ExitOnError)
-)
+var testCommandLine = NewFlagSet(os.Args[0], flag.ExitOnError)

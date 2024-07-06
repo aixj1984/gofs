@@ -1,7 +1,6 @@
 package loader
 
-type emptyLoader struct {
-}
+type emptyLoader struct{}
 
 func newEmptyLoader() Loader {
 	return &emptyLoader{}

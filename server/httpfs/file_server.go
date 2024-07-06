@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"time"
 
@@ -149,6 +150,34 @@ func initRoute(engine *gin.Engine, opt server.Option, logger *logger.Logger) err
 	if errHash != nil {
 		return errHash
 	}
+	// 新增删除文件的接口
+	rootGroup.POST(server.SourceRoutePrefix+"*path", func(c *gin.Context) {
+		// 你的逻辑代码
+		path := c.Param("path")
+		// 解析 URL
+		parsedURL, err := url.Parse(path)
+		if err != nil {
+			logger.Error(err, "Error parsing URL : %s", path)
+			return
+		}
+
+		filePath := source.Path().Base() + parsedURL.Path
+
+		if _, err := os.Stat(filePath); err == nil {
+			// 文件存在，删除文件
+			err := os.Remove(filePath)
+			if err != nil {
+				logger.Error(err, "error delete file : %s", filePath)
+			} else {
+				logger.Info("success delete file : %s", filePath)
+			}
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"code":    0,
+			"message": "success",
+		})
+	})
 
 	if source.IsDisk() || source.Is(core.RemoteDisk) {
 		rootGroup.StaticFS(server.SourceRoutePrefix, rate.NewHTTPDir(source.Path().Base(), opt.MaxTranRate.Bytes(), logger))

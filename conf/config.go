@@ -22,6 +22,8 @@ type Config struct {
 	SyncOnce              bool      `json:"sync_once" yaml:"sync_once"`
 	SyncCron              string    `json:"sync_cron" yaml:"sync_cron"`
 	EnableLogicallyDelete bool      `json:"logically_delete" yaml:"logically_delete"`
+	SyncDelete            bool      `json:"sync_delete" yaml:"sync_delete"`
+	DeleteSource          bool      `json:"delete_source" yaml:"delete_source"`
 	ClearDeletedPath      bool      `json:"clear_deleted" yaml:"clear_deleted"`
 	IgnoreConf            string    `json:"ignore_conf" yaml:"ignore_conf"`
 	IgnoreDeletedPath     bool      `json:"ignore_deleted" yaml:"ignore_deleted"`

@@ -423,6 +423,10 @@ You can use the `sync_delay` flag like the [Local Disk](#local-disk).
 # Start a remote disk client
 # Replace the `users` flag with your real username and password
 $ gofs -source="rs://127.0.0.1:8105" -dest=./dest -users="gofs|password" -tls_cert_file=cert.pem
+
+# sync_delete false 表示客户端不响应服务器的删除指令
+# delete_source true 表示客户端同步完成后，会发起删除服务器的文件的指令
+$ gofs -source="rs://127.0.0.1:8105" -dest=./dest -users="gofs|password" -tls_cert_file=cert.pem  -sync_delete=false -delete_source=true
 ```
 
 ### Remote Push Server

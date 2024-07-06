@@ -30,7 +30,7 @@ func (fi *minIOFileInfo) Size() int64 {
 }
 
 func (fi *minIOFileInfo) Mode() fs.FileMode {
-	return 0666
+	return 0o666
 }
 
 func (fi *minIOFileInfo) ModTime() time.Time {

@@ -36,8 +36,7 @@ func getExpectCost(dataSize, bytesPerSecond int64) (expectCost time.Duration, ma
 	return expectCost, max, min
 }
 
-type writer struct {
-}
+type writer struct{}
 
 func (w *writer) Write(p []byte) (n int, err error) {
 	return len(p), nil

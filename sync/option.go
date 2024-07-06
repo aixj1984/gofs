@@ -22,6 +22,8 @@ type Option struct {
 	TLSKeyFile            string
 	TLSInsecureSkipVerify bool
 	EnableLogicallyDelete bool
+	SyncDelete            bool
+	DeleteSource          bool
 	ChunkSize             int64
 	CheckpointCount       int
 	ForceChecksum         bool
@@ -55,6 +57,8 @@ func NewSyncOption(config conf.Config, users []*auth.User, r retry.Retry, pi ign
 		TLSKeyFile:            config.TLSKeyFile,
 		TLSInsecureSkipVerify: config.TLSInsecureSkipVerify,
 		EnableLogicallyDelete: config.EnableLogicallyDelete,
+		SyncDelete:            config.SyncDelete,
+		DeleteSource:          config.DeleteSource,
 		ChunkSize:             config.ChunkSize.Bytes(),
 		CheckpointCount:       config.CheckpointCount,
 		ForceChecksum:         config.ForceChecksum,

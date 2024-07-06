@@ -9,9 +9,7 @@ import (
 	"github.com/no-src/log/option"
 )
 
-var (
-	innerLogger = logger.InnerLogger()
-)
+var innerLogger = logger.InnerLogger()
 
 const (
 	debugLogLevel = level.DebugLevel
@@ -45,7 +43,7 @@ func initDefaultLogger(c conf.Config) (*logger.Logger, error) {
 
 // initWebServerLogger init the web server logger
 func initWebServerLogger(c conf.Config) (*logger.Logger, error) {
-	var webLogger = log.NewConsoleLogger(level.Level(c.LogLevel))
+	webLogger := log.NewConsoleLogger(level.Level(c.LogLevel))
 	if c.EnableFileLogger && c.EnableFileServer {
 		webFileLogger, err := log.NewFileLoggerWithOption(option.NewFileLoggerOption(level.Level(c.LogLevel), c.LogDir, "web_", c.LogFlush, c.LogFlushInterval.Duration(), c.LogSplitDate))
 		if err != nil {
@@ -59,7 +57,7 @@ func initWebServerLogger(c conf.Config) (*logger.Logger, error) {
 
 // initEventLogger init the event logger
 func initEventLogger(c conf.Config) (log.Logger, error) {
-	var eventLogger = log.NewEmptyLogger()
+	eventLogger := log.NewEmptyLogger()
 	if c.EnableEventLog {
 		eventFileLogger, err := log.NewFileLoggerWithOption(option.NewFileLoggerOption(level.Level(c.LogLevel), c.LogDir, "event_", c.LogFlush, c.LogFlushInterval.Duration(), c.LogSplitDate))
 		if err != nil {

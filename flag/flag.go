@@ -24,7 +24,7 @@ func ParseFlags(args []string) (config conf.Config) {
 		args = append(args, "-h")
 	}
 
-	var cl = core.NewFlagSet(args[0], flag.ExitOnError)
+	cl := core.NewFlagSet(args[0], flag.ExitOnError)
 
 	// other
 	cl.BoolVar(&config.PrintVersion, "v", false, "print the version info")
@@ -37,6 +37,8 @@ func ParseFlags(args []string) (config conf.Config) {
 	cl.BoolVar(&config.SyncOnce, "sync_once", false, "sync source directory to dest directory once")
 	cl.StringVar(&config.SyncCron, "sync_cron", "", "sync source directory to dest directory with cron")
 	cl.BoolVar(&config.EnableLogicallyDelete, "logically_delete", false, "delete dest file logically")
+	cl.BoolVar(&config.SyncDelete, "sync_delete", true, "sync source delete  file")
+	cl.BoolVar(&config.DeleteSource, "delete_source", false, "delete source file after receive")
 	cl.BoolVar(&config.ClearDeletedPath, "clear_deleted", false, "remove all of the deleted files in the dest path")
 	cl.StringVar(&config.IgnoreConf, "ignore_conf", "", "a config file of the ignore component")
 	cl.BoolVar(&config.IgnoreDeletedPath, "ignore_deleted", true, "ignore to sync the deleted file")

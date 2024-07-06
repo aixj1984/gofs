@@ -13,9 +13,7 @@ const (
 	DefaultFormatter = formatter.TextFormatter
 )
 
-var (
-	innerLogger = newInnerLogger()
-)
+var innerLogger = newInnerLogger()
 
 // Logger an logger component
 type Logger struct {

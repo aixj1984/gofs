@@ -27,9 +27,7 @@ import (
 	"github.com/no-src/nsgo/stringutil"
 )
 
-var (
-	errCallQueryAPI = errors.New("call the query api error")
-)
+var errCallQueryAPI = errors.New("call the query api error")
 
 type remoteClientSync struct {
 	baseSync
@@ -40,6 +38,8 @@ type remoteClientSync struct {
 	chunkSize             int64
 	enableLogicallyDelete bool
 	forceChecksum         bool
+	syncDelete            bool
+	deleteSource          bool
 	hash                  hashutil.Hash
 	maxTranRate           int64
 	httpClient            httputil.HttpClient
@@ -60,6 +60,8 @@ func NewRemoteClientSync(opt Option) (Sync, error) {
 	forceChecksum := opt.ForceChecksum
 	checksumAlgorithm := opt.ChecksumAlgorithm
 	enableLogicallyDelete := opt.EnableLogicallyDelete
+	syncDelete := opt.SyncDelete
+	deleteSource := opt.DeleteSource
 	maxTranRate := opt.MaxTranRate
 	logger := opt.Logger
 
@@ -87,8 +89,10 @@ func NewRemoteClientSync(opt Option) (Sync, error) {
 		baseSync:              newBaseSync(source, dest, logger),
 		chunkSize:             chunkSize,
 		enableLogicallyDelete: enableLogicallyDelete,
+		syncDelete:            syncDelete,
 		forceChecksum:         forceChecksum,
 		hash:                  hash,
+		deleteSource:          deleteSource,
 		maxTranRate:           maxTranRate,
 		httpClient:            httpClient,
 		pi:                    pi,
@@ -243,6 +247,12 @@ func (rs *remoteClientSync) write(path, dest string) error {
 	if err == nil {
 		rs.logger.Info("[remote-client] [write] [success] size[%d => %d] [%s] => [%s]", size, n, path, dest)
 		rs.chtimes(dest, aTime, mTime)
+		if rs.deleteSource { // 如果开启了删除原文件的指令，则完成下载后，发起删除原文件的命令
+			_, err = rs.httpPostWithAuth(path)
+			if err != nil {
+				rs.logger.Warn("[remote client sync] send delete source file error => %s =>[%s]", err.Error(), path)
+			}
+		}
 	}
 	return err
 }
@@ -255,6 +265,10 @@ func (rs *remoteClientSync) chtimes(dest string, aTime, mTime time.Time) {
 }
 
 func (rs *remoteClientSync) Remove(path string) error {
+	if !rs.syncDelete { // 如果关闭删除指令，再接收到删除指令后，直接忽略
+		return nil
+	}
+	rs.logger.Debug("[remote-client] [remove]  [%s]", path)
 	return rs.remove(path, false)
 }
 
@@ -451,6 +465,35 @@ func (rs *remoteClientSync) httpGetWithAuth(rawURL string, header http.Header) (
 			rs.cookies = cookies
 			rs.logger.Debug("try to auto login file server success maybe, retry to get resource => %s", rawURL)
 			return rs.httpClient.HttpGetWithCookie(rawURL, header, rs.cookies...)
+		}
+		return nil, errFileServerUnauthorized
+	}
+	return resp, err
+}
+
+func (rs *remoteClientSync) httpPostWithAuth(rawURL string) (resp *http.Response, err error) {
+	resp, err = rs.httpClient.HttpPostWithCookie(rawURL, nil, rs.cookies...)
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode == http.StatusNotFound {
+		return nil, os.ErrNotExist
+	}
+	if resp.StatusCode == http.StatusUnauthorized && rs.currentUser != nil {
+		// auto login
+		parseUrl, err := url.Parse(rawURL)
+		if err != nil {
+			return nil, err
+		}
+		user := rs.currentUser
+		cookies, err := client.SignIn(rs.httpClient, parseUrl.Scheme, parseUrl.Host, user.UserName(), user.Password(), rs.logger)
+		if err != nil {
+			return nil, err
+		}
+		if len(cookies) > 0 {
+			rs.cookies = cookies
+			rs.logger.Debug("try to auto delete file server success maybe, retry to get resource => %s", rawURL)
+			return rs.httpClient.HttpPostWithCookie(rawURL, nil, rs.cookies...)
 		}
 		return nil, errFileServerUnauthorized
 	}
