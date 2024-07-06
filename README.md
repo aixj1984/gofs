@@ -442,6 +442,12 @@ example, `-users="gofs|password|rw"`.
 # Replace the `tls_cert_file` and `tls_key_file` flags with your real cert files in the production environment
 # Replace the `users` flag with complex username and password for security
 $ gofs -source="rs://127.0.0.1:8105?mode=server&local_sync_disabled=true&path=./source&fs_server=https://127.0.0.1" -dest=./dest -users="gofs|password|rw" -tls_cert_file=cert.pem -tls_key_file=key.pem -push_server -token_secret=mysecret_16bytes
+
+# 如果文件服务不想使用443端口，则可以通过 server_addr 指定端口， 该端口与 fs_server 配置的端口保持一致
+
+$ gofs -source="rs://127.0.0.1:8105?mode=server&local_sync_disabled=true&path=./source&fs_server=https://127.0.0.1:1234" -dest=./dest -users="gofs|password|rw" -tls_cert_file=cert.pem -tls_key_file=key.pem -push_server -token_secret=mysecret_16bytes  -server_addr=:1234
+
+
 ```
 
 ### Remote Push Client
